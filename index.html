@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Gaem</title>
+    <style>
+    	* { padding: 0; margin: 0; }
+    	canvas { background: #eee; display: block; margin: 0 auto; margin-top: 5%;}
+    </style>
+</head>
+<body>
+
+<canvas id="window" width="800" height="500"></canvas>
+
+<script>
+	var canvas = document.getElementById('window');
+    var context = canvas.getContext('2d');
+    var player = canvas.getContext('2d');
+    var ball = canvas.getContext('2d');
+
+    context.beginPath();
+    context.rect(0, 450, 800, 10);
+    context.fillStyle = "FF0000";
+    context.fill();
+    context.closePath();
+    var ballX = 780;
+    var ballY = 440;
+    var dx = -2;
+    rate = 1500;
+    var playerX = 100;
+    var playerY = 450;
+    var playerStand = 450;
+    function drawBall(){
+        ball.clearRect(ballX-10,ballY-10,22,20);
+        ball.beginPath();
+        ball.arc(ballX, ballY, 10, 0, Math.PI*2);
+        ball.fillStyle = "#0095DD";
+        ball.fill();
+        ball.closePath();
+    }
+    setInterval(draw)
+    function draw(){
+        
+        if(ballX < -100)
+        {
+            ballX = rate;
+            if(rate > 800){
+                 rate = rate - 50;
+            } else {
+                dx = dx - 1;
+            }
+        }
+        if(ballX-10 == playerX && ballY+10 == playerY) endGame();
+        ballX += dx;
+        drawBall();
+    }
+    setInterval(draw, 10);
+    
+    function drawPlayer(){
+        player.clearRect(playerX,playerY, 10, 50);
+        player.beginPath();
+        if(playerY > 450) playerY = 450;
+        player.rect(playerX, playerY, 10, -50);
+        player.fillStyle = "#0095AA";
+        player.fill();
+        player.closePath();
+    }
+    setInterval(drawPlayer, 10);
+    var goUp = true;
+    var a = 10;
+    function playerJump()
+    {
+        if(!jumped){
+            //soka i virsu
+            if(playerY >= 300 && goUp){
+                playerY = playerY - a;
+                a = a * 0.95;
+            //leidzias
+            } else if (playerY < 300 || !goUp){
+                playerY = playerY + a;
+                goUp = false;
+                a = a * 1.05;
+            }
+            //baige suoli
+            if(playerY >= 450 && !goUp) jumped = true;
+        }
+    }
+    var jumper = setInterval(playerJump,20);
+    document.addEventListener('keydown', function(event) {
+        if(event.keyCode == 32 && playerStand == playerY) {
+            clearInterval(jumper);
+            jumped = false;
+            goUp = true;
+            jumper = setInterval(playerJump,10);
+        }
+    });
+
+    function endGame(){
+        context.font = "30px Arial";
+        context.fillText("Game over", canvas.width/2-70, canvas.height/2);
+        canvas.freeze();
+    }
+</script>
+
+</body>
+</html>
